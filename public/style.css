@@ -1,0 +1,243 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+  border-bottom: 2px solid transparent;
+}
+
+.tabs button.active {
+  color: #fff;
+  border-bottom: 2px solid #ffd700;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 30px;
+  margin: 10px 0;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.8);
+  outline: none;
+}
+
+button {
+  background: #ffd700;
+  border: none;
+  color: #333;
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 10px 5px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.message {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #ffd700;
+}
+
+/* Game header */
+.game-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  background: rgba(0,0,0,0.2);
+  padding: 10px 20px;
+  border-radius: 15px;
+}
+
+.room-info {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.player-info span {
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+.turn-indicator {
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  font-weight: bold;
+  min-width: 120px;
+  text-align: center;
+}
+
+#board-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.board {
+  width: min(80vw, 80vh, 500px);
+  height: min(80vw, 80vh, 500px);
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+  gap: 2px;
+  background: #333;
+  border: 3px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.cell {
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.cell:hover {
+  background: #f0f0f0;
+}
+
+.cell.X {
+  color: #e74c3c;
+  font-size: 2rem;
+}
+
+.cell.O {
+  color: #3498db;
+  font-size: 2rem;
+}
+
+.cell.locked {
+  cursor: default;
+}
+
+#game-controls {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.modal-content {
+  background: white;
+  color: #333;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+@media (max-width: 600px) {
+  .board {
+    width: 95vw;
+    height: 95vw;
+    gap: 1px;
+  }
+  .cell {
+    font-size: 1rem;
+  }
+  .cell.X, .cell.O {
+    font-size: 1.2rem;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+}

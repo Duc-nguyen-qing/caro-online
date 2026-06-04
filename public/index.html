@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Caro Online - Gomoku</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="app">
+    <!-- Màn hình Đăng nhập / Đăng ký -->
+    <div id="auth-section" class="section">
+      <h1>Caro Online</h1>
+      <div class="card">
+        <div class="tabs">
+          <button id="loginTab" class="active">Đăng nhập</button>
+          <button id="registerTab">Đăng ký</button>
+        </div>
+        <form id="authForm">
+          <input type="text" id="username" placeholder="Tên người chơi" required />
+          <input type="password" id="password" placeholder="Mật khẩu" required />
+          <button type="submit" id="submitAuth">Đăng nhập</button>
+        </form>
+        <p id="authMessage" class="message"></p>
+      </div>
+    </div>
+
+    <!-- Màn hình Menu -->
+    <div id="menu-section" class="section" style="display: none;">
+      <h1>Caro Online</h1>
+      <div class="card">
+        <p>Xin chào, <span id="displayUsername"></span></p>
+        <button id="createRoomBtn">Tạo phòng</button>
+        <button id="joinRoomBtn">Gia nhập phòng</button>
+        <div id="joinRoomInput" style="display: none;">
+          <input type="text" id="roomIdInput" placeholder="Nhập ID phòng" />
+          <button id="joinRoomSubmit">Vào phòng</button>
+        </div>
+        <p id="menuMessage" class="message"></p>
+      </div>
+    </div>
+
+    <!-- Màn hình Game -->
+    <div id="game-section" class="section" style="display: none;">
+      <div class="game-header">
+        <div class="room-info"><span id="roomIdDisplay"></span></div>
+        <div class="player-info">
+          <span id="playerXName">X: -</span>
+          <span id="playerOName">O: -</span>
+        </div>
+        <div id="turnIndicator" class="turn-indicator"></div>
+      </div>
+      <div id="board-container"><!-- Bàn cờ được vẽ bằng JS --></div>
+      <div id="game-controls">
+        <button id="startGameBtn" style="display: none;">Bắt đầu</button>
+        <p id="gameMessage" class="message"></p>
+      </div>
+    </div>
+
+    <!-- Modal kết quả -->
+    <div id="resultModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2 id="resultText"></h2>
+        <button id="backToMenuBtn">Về Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

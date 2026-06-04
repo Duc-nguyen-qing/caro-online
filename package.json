@@ -1,0 +1,14 @@
+{
+  "name": "caro-online",
+  "version": "1.0.0",
+  "description": "Web game Caro online",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  }
+}
