@@ -3,57 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Caro Online - Nguyễn Thanh Đức</title>
+  <title>Game Cờ Caro Online</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
 </head>
 <body>
   <div id="app">
-    <!-- Màn hình Đăng nhập / Đăng ký -->
-    <div id="auth-section" class="section">
-      <h1>Caro Online</h1>
+    <!-- Màn hình Đăng nhập -->
+    <div id="login-section" class="section active-section">
+      <div class="logo-container">
+        <div class="logo-icon">♟️</div>
+        <h1>Caro Online</h1>
+        <p class="subtitle">Game cờ ca-rô trực tuyến</p>
+      </div>
       <div class="card">
-        <div class="tabs">
-          <button id="loginTab" class="active">Đăng nhập</button>
-          <button id="registerTab">Đăng ký</button>
-        </div>
-        <form id="authForm">
-          <input type="text" id="username" placeholder="Tên người chơi" required />
-          <input type="password" id="password" placeholder="Mật khẩu" required />
-          <button type="submit" id="submitAuth">Đăng nhập</button>
+        <h2>Đăng Nhập</h2>
+        <form id="loginForm">
+          <div class="input-group">
+            <span class="input-icon">👤</span>
+            <input type="text" id="loginUsername" placeholder="Tên người chơi" required />
+          </div>
+          <div class="input-group">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="loginPassword" placeholder="Mật khẩu" required />
+          </div>
+          <button type="submit" class="btn-primary">Đăng Nhập</button>
         </form>
-        <p id="authMessage" class="message"></p>
+        <p class="switch-text">Chưa có tài khoản? <a href="#" id="goToRegister">Đăng ký ngay</a></p>
+        <p id="loginMessage" class="message"></p>
+      </div>
+    </div>
+
+    <!-- Màn hình Đăng ký -->
+    <div id="register-section" class="section">
+      <div class="logo-container">
+        <div class="logo-icon">♟️</div>
+        <h1>Caro Online</h1>
+        <p class="subtitle">Tạo tài khoản mới</p>
+      </div>
+      <div class="card">
+        <h2>Đăng Ký</h2>
+        <form id="registerForm">
+          <div class="input-group">
+            <span class="input-icon">👤</span>
+            <input type="text" id="registerUsername" placeholder="Tên người chơi" required />
+          </div>
+          <div class="input-group">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="registerPassword" placeholder="Mật khẩu" required />
+          </div>
+          <div class="input-group">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="registerConfirmPassword" placeholder="Xác nhận mật khẩu" required />
+          </div>
+          <button type="submit" class="btn-primary">Đăng Ký</button>
+        </form>
+        <p class="switch-text">Đã có tài khoản? <a href="#" id="goToLogin">Đăng nhập</a></p>
+        <p id="registerMessage" class="message"></p>
       </div>
     </div>
 
     <!-- Màn hình Menu -->
-    <div id="menu-section" class="section" style="display: none;">
-      <h1>Caro Online</h1>
-      <div class="card">
-        <p>Xin chào, <span id="displayUsername"></span></p>
-        <button id="createRoomBtn">Tạo phòng</button>
-        <button id="joinRoomBtn">Gia nhập phòng</button>
-        <div id="joinRoomInput" style="display: none;">
-          <input type="text" id="roomIdInput" placeholder="Nhập ID phòng" />
-          <button id="joinRoomSubmit">Vào phòng</button>
+    <div id="menu-section" class="section">
+      <div class="logo-container small">
+        <div class="logo-icon">♟️</div>
+        <h1>Caro Online</h1>
+      </div>
+      <div class="card menu-card">
+        <div class="user-welcome">
+          <div class="avatar">👤</div>
+          <p>Xin chào, <span id="displayUsername"></span></p>
+        </div>
+        <button id="createRoomBtn" class="btn-primary btn-icon">🎮 Tạo Phòng Mới</button>
+        <div class="divider"><span>hoặc</span></div>
+        <button id="joinRoomBtn" class="btn-secondary btn-icon">🚪 Gia Nhập Phòng</button>
+        <div id="joinRoomInput" class="join-room-input" style="display: none;">
+          <div class="input-group">
+            <span class="input-icon">🔑</span>
+            <input type="text" id="roomIdInput" placeholder="Nhập ID phòng" />
+          </div>
+          <button id="joinRoomSubmit" class="btn-primary btn-sm">Vào Phòng</button>
         </div>
         <p id="menuMessage" class="message"></p>
       </div>
     </div>
 
     <!-- Màn hình Game -->
-    <div id="game-section" class="section" style="display: none;">
+    <div id="game-section" class="section">
       <div class="game-header">
-        <div class="room-info"><span id="roomIdDisplay"></span></div>
+        <div class="room-info">
+          <span class="room-label">Phòng:</span>
+          <span id="roomIdDisplay" class="room-id">------</span>
+        </div>
         <div class="player-info">
-          <span id="playerXName">X: -</span>
-          <span id="playerOName">O: -</span>
+          <div class="player-badge player-x">
+            <span class="player-symbol">X</span>
+            <span id="playerXName">-</span>
+          </div>
+          <span class="vs">VS</span>
+          <div class="player-badge player-o">
+            <span class="player-symbol">O</span>
+            <span id="playerOName">-</span>
+          </div>
         </div>
         <div id="turnIndicator" class="turn-indicator"></div>
       </div>
-      <div id="board-container"><!-- Bàn cờ được vẽ bằng JS --></div>
+      <div class="board-wrapper">
+        <div id="board-container"><!-- Bàn cờ được vẽ bằng JS --></div>
+      </div>
       <div id="game-controls">
-        <button id="startGameBtn" style="display: none;">Bắt đầu</button>
+        <button id="startGameBtn" class="btn-primary btn-lg" style="display: none;">⚡ Bắt Đầu Trận Đấu</button>
         <p id="gameMessage" class="message"></p>
       </div>
     </div>
@@ -61,8 +120,9 @@
     <!-- Modal kết quả -->
     <div id="resultModal" class="modal" style="display: none;">
       <div class="modal-content">
+        <div class="modal-icon" id="modalIcon"></div>
         <h2 id="resultText"></h2>
-        <button id="backToMenuBtn">Về Menu</button>
+        <button id="backToMenuBtn" class="btn-primary">🏠 Về Menu</button>
       </div>
     </div>
   </div>

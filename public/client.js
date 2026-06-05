@@ -8,41 +8,49 @@ let boardElement;
 let roomCurrentTurn = null;
 let currentBoardState = Array(225).fill(null);
 
-// Auth elements
-const authSection = document.getElementById('auth-section');
+// Sections
+const loginSection = document.getElementById('login-section');
+const registerSection = document.getElementById('register-section');
 const menuSection = document.getElementById('menu-section');
 const gameSection = document.getElementById('game-section');
 const resultModal = document.getElementById('resultModal');
-const authForm = document.getElementById('authForm');
-const usernameInput = document.getElementById('username');
-const passwordInput = document.getElementById('password');
-const authMessage = document.getElementById('authMessage');
-const loginTab = document.getElementById('loginTab');
-const registerTab = document.getElementById('registerTab');
-let authMode = 'login';
 
-loginTab.addEventListener('click', () => {
-  authMode = 'login';
-  loginTab.classList.add('active');
-  registerTab.classList.remove('active');
-  document.getElementById('submitAuth').textContent = 'Đăng nhập';
-});
+// Forms
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
 
-registerTab.addEventListener('click', () => {
-  authMode = 'register';
-  registerTab.classList.add('active');
-  loginTab.classList.remove('active');
-  document.getElementById('submitAuth').textContent = 'Đăng ký';
-});
+// Messages
+const loginMessage = document.getElementById('loginMessage');
+const registerMessage = document.getElementById('registerMessage');
 
-authForm.addEventListener('submit', async (e) => {
+// Navigation
+document.getElementById('goToRegister').addEventListener('click', (e) => {
   e.preventDefault();
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value;
+  showSection(registerSection);
+});
+
+document.getElementById('goToLogin').addEventListener('click', (e) => {
+  e.preventDefault();
+  showSection(loginSection);
+});
+
+function showSection(section) {
+  [loginSection, registerSection, menuSection, gameSection].forEach(s => {
+    s.style.display = 'none';
+    s.classList.remove('active-section');
+  });
+  section.style.display = 'flex';
+  section.classList.add('active-section');
+}
+
+// Đăng nhập
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
   if (!username || !password) return;
-  const endpoint = authMode === 'login' ? '/api/login' : '/api/register';
   try {
-    const res = await fetch(endpoint, {
+    const res = await fetch('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
@@ -53,10 +61,61 @@ authForm.addEventListener('submit', async (e) => {
       currentUsername = data.username;
       connectSocket();
     } else {
-      authMessage.textContent = data.error;
+      loginMessage.textContent = data.error;
+      loginMessage.className = 'message';
     }
   } catch (err) {
-    authMessage.textContent = 'Lỗi kết nối máy chủ';
+    loginMessage.textContent = 'Lỗi kết nối máy chủ';
+    loginMessage.className = 'message';
+  }
+});
+
+// Đăng ký
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = document.getElementById('registerUsername').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+  if (!username || !password || !confirmPassword) {
+    registerMessage.textContent = 'Vui lòng điền đầy đủ thông tin';
+    registerMessage.className = 'message';
+    return;
+  }
+  if (password !== confirmPassword) {
+    registerMessage.textContent = 'Mật khẩu xác nhận không khớp';
+    registerMessage.className = 'message';
+    return;
+  }
+  if (password.length < 3) {
+    registerMessage.textContent = 'Mật khẩu phải có ít nhất 3 ký tự';
+    registerMessage.className = 'message';
+    return;
+  }
+  try {
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      registerMessage.textContent = data.message || 'Đăng ký thành công!';
+      registerMessage.className = 'message success';
+      registerForm.reset();
+      setTimeout(() => {
+        showSection(loginSection);
+        registerMessage.textContent = '';
+        loginMessage.textContent = 'Đăng ký thành công! Hãy đăng nhập.';
+        loginMessage.className = 'message success';
+      }, 1200);
+    } else {
+      registerMessage.textContent = data.error;
+      registerMessage.className = 'message';
+    }
+  } catch (err) {
+    registerMessage.textContent = 'Lỗi kết nối máy chủ';
+    registerMessage.className = 'message';
   }
 });
 
@@ -65,11 +124,13 @@ function connectSocket() {
 
   socket.on('connect', () => {
     console.log('Socket connected');
-    showMenu();
+    showSection(menuSection);
+    document.getElementById('displayUsername').textContent = currentUsername;
   });
 
   socket.on('connect_error', (err) => {
-    authMessage.textContent = 'Lỗi xác thực socket';
+    loginMessage.textContent = 'Lỗi xác thực socket';
+    loginMessage.className = 'message';
     console.error(err);
   });
 
@@ -81,11 +142,12 @@ function connectSocket() {
   });
 
   document.getElementById('joinRoomBtn').addEventListener('click', () => {
-    document.getElementById('joinRoomInput').style.display = 'block';
+    document.getElementById('joinRoomInput').style.display = 'flex';
+    document.getElementById('joinRoomInput').style.flexDirection = 'column';
   });
 
   document.getElementById('joinRoomSubmit').addEventListener('click', () => {
-    const roomId = document.getElementById('roomIdInput').value.trim();
+    const roomId = document.getElementById('roomIdInput').value.trim().toUpperCase();
     if (roomId) socket.emit('joinRoom', roomId);
   });
 
@@ -94,8 +156,9 @@ function connectSocket() {
     mySymbol = symbol;
     currentRoom = roomId;
     showGameSection(roomId, symbol);
-    document.getElementById('startGameBtn').style.display = 'block';
-    document.getElementById('gameMessage').textContent = 'Chờ người chơi khác...';
+    document.getElementById('startGameBtn').style.display = 'inline-block';
+    document.getElementById('gameMessage').textContent = 'Đang chờ người chơi khác...';
+    document.getElementById('gameMessage').style.color = '#ffd200';
   });
 
   // Room joined
@@ -103,22 +166,23 @@ function connectSocket() {
     mySymbol = symbol;
     currentRoom = roomId;
     showGameSection(roomId, symbol);
-    document.getElementById('startGameBtn').style.display = 'block';
-    document.getElementById('gameMessage').textContent = 'Chờ chủ phòng bắt đầu...';
+    document.getElementById('startGameBtn').style.display = 'inline-block';
+    document.getElementById('gameMessage').textContent = 'Đang chờ chủ phòng bắt đầu...';
+    document.getElementById('gameMessage').style.color = '#ffd200';
   });
 
   // Player joined
   socket.on('playerJoined', ({ players }) => {
     updatePlayers(players);
-    document.getElementById('gameMessage').textContent = 'Đủ người, sẵn sàng bắt đầu!';
+    document.getElementById('gameMessage').textContent = 'Đã đủ người, sẵn sàng bắt đầu!';
+    document.getElementById('gameMessage').style.color = '#51cf66';
   });
 
-  // Start game button
+  // Start game
   document.getElementById('startGameBtn').addEventListener('click', () => {
     socket.emit('startGame');
   });
 
-  // Game started
   socket.on('gameStarted', ({ board, currentTurn, players }) => {
     gameActive = true;
     roomCurrentTurn = currentTurn;
@@ -137,28 +201,31 @@ function connectSocket() {
   });
 
   // Game over
-  socket.on('gameOver', ({ winner, winnerUsername, board, lastMove }) => {
+  socket.on('gameOver', ({ winner, winnerUsername, board, lastMove, reason }) => {
     gameActive = false;
     roomCurrentTurn = null;
     drawBoard(board);
     if (lastMove) {
       const cells = document.querySelectorAll('.cell');
       if (cells[lastMove.index]) {
-        cells[lastMove.index].style.boxShadow = '0 0 10px gold';
+        cells[lastMove.index].style.boxShadow = '0 0 12px gold';
       }
     }
     if (winner === 'draw') {
-      showResult('HÒA!');
+      showResult('HÒA!', '🤝', '#ffd200');
     } else {
-      const winMsg = winner === mySymbol ? 'BẠN ĐÃ CHIẾN THẮNG!' : 'BẠN ĐÃ THUA CUỘC!';
-      const color = winner === mySymbol ? '#2ecc71' : '#e74c3c';
-      showResult(winMsg, color);
+      const isWinner = winner === mySymbol;
+      const msg = isWinner ? 'BẠN ĐÃ CHIẾN THẮNG!' : 'BẠN ĐÃ THUA CUỘC!';
+      const icon = isWinner ? '🏆' : '😢';
+      const color = isWinner ? '#51cf66' : '#e74c3c';
+      showResult(msg, icon, color);
     }
   });
 
   // Player left
   socket.on('playerLeft', ({ username }) => {
     document.getElementById('gameMessage').textContent = `${username} đã rời phòng`;
+    document.getElementById('gameMessage').style.color = '#ff6b6b';
     if (gameActive) {
       gameActive = false;
       roomCurrentTurn = null;
@@ -167,45 +234,40 @@ function connectSocket() {
   });
 }
 
-function showMenu() {
-  authSection.style.display = 'none';
-  menuSection.style.display = 'flex';
-  gameSection.style.display = 'none';
-  document.getElementById('displayUsername').textContent = currentUsername;
-}
-
 function showGameSection(roomId, symbol) {
-  menuSection.style.display = 'none';
-  gameSection.style.display = 'flex';
-  document.getElementById('roomIdDisplay').textContent = `Phòng: ${roomId}`;
-  // Reset bàn cờ trống
+  showSection(gameSection);
+  document.getElementById('roomIdDisplay').textContent = roomId;
   boardElement = null;
   const emptyBoard = Array(225).fill(null);
   currentBoardState = emptyBoard;
   drawBoard(emptyBoard);
-  document.getElementById('startGameBtn').style.display = 'block';
-  document.getElementById('gameMessage').textContent = 'Chờ đối thủ...';
+  document.getElementById('startGameBtn').style.display = 'inline-block';
+  document.getElementById('gameMessage').textContent = 'Đang chờ đối thủ...';
+  document.getElementById('gameMessage').style.color = '#ffd200';
 }
 
 function updatePlayers(players) {
   const playerX = players.find(p => p.symbol === 'X');
   const playerO = players.find(p => p.symbol === 'O');
-  document.getElementById('playerXName').textContent = playerX ? `X: ${playerX.username}` : 'X: -';
-  document.getElementById('playerOName').textContent = playerO ? `O: ${playerO.username}` : 'O: -';
+  document.getElementById('playerXName').textContent = playerX ? playerX.username : '-';
+  document.getElementById('playerOName').textContent = playerO ? playerO.username : '-';
 }
 
 function updateTurnIndicator(currentTurn) {
   const indicator = document.getElementById('turnIndicator');
   if (!gameActive || !currentTurn) {
-    indicator.textContent = '';
+    indicator.textContent = '---';
+    indicator.style.background = 'rgba(255,255,255,0.1)';
     return;
   }
   if (currentTurn === mySymbol) {
-    indicator.textContent = 'Lượt của bạn';
-    indicator.style.background = 'rgba(255, 215, 0, 0.3)';
+    indicator.textContent = '🔥 Lượt của bạn';
+    indicator.style.background = 'rgba(247, 151, 30, 0.3)';
+    indicator.style.border = '1px solid rgba(247, 151, 30, 0.5)';
   } else {
-    indicator.textContent = 'Lượt đối thủ';
-    indicator.style.background = 'rgba(255,255,255,0.2)';
+    indicator.textContent = '⏳ Lượt đối thủ';
+    indicator.style.background = 'rgba(255,255,255,0.12)';
+    indicator.style.border = '1px solid rgba(255,255,255,0.15)';
   }
 }
 
@@ -238,20 +300,20 @@ function drawBoard(boardArray) {
 function onCellClick(index, currentValue) {
   if (!gameActive || currentValue !== null) return;
   if (mySymbol !== roomCurrentTurn) {
-    alert('Chưa đến lượt bạn');
     return;
   }
   socket.emit('makeMove', { index });
 }
 
-function showResult(message, color) {
+function showResult(message, icon, color) {
   resultModal.style.display = 'flex';
   document.getElementById('resultText').textContent = message;
-  document.getElementById('resultText').style.color = color || '#333';
+  document.getElementById('resultText').style.color = color;
+  document.getElementById('modalIcon').textContent = icon;
   document.getElementById('backToMenuBtn').onclick = () => {
     resultModal.style.display = 'none';
     leaveRoom();
-    showMenu();
+    showSection(menuSection);
   };
 }
 
